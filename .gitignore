@@ -1,0 +1,14 @@
+node_modules/
+.next/
+.env
+*.local
+coverage/
+dist/
+test-results/
+playwright-report/
+tsconfig.tsbuildinfo
+.workbuddy/
+
+# 数据库备份产物：体积大（单个 ~77MB）且含生产数据，禁止入库
+backups/
+*.sql.gz
