@@ -19,6 +19,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npx prisma validate
+      - run: npm run audit:prod
       - run: npx next lint
       - run: npm run typecheck
       - run: npm test -- --runInBand

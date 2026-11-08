@@ -1,10 +1,5 @@
 import { jwtVerify, SignJWT } from "jose";
-
-// In production ALWAYS set JWT_SECRET. The fallback exists only for local development
-// and pure-logic tests; shipping it to production would be insecure.
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "dev-only-insecure-secret-change-me"
-);
+import { resolveJwtSecret } from "./secret";
 
 const JWT_EXPIRES_IN = "24h";
 
@@ -16,6 +11,7 @@ export interface JWTPayload {
 }
 
 export async function generateToken(payload: JWTPayload): Promise<string> {
+  const secret = resolveJwtSecret();
   return new SignJWT({
     userId: payload.userId,
     userName: payload.userName,
@@ -25,12 +21,15 @@ export async function generateToken(payload: JWTPayload): Promise<string> {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(JWT_EXPIRES_IN)
-    .sign(JWT_SECRET);
+    .sign(secret);
 }
 
 export async function verifyToken(token: string): Promise<JWTPayload | null> {
+  // Resolve outside the try block: a missing/weak secret is a configuration
+  // error and must surface, not be swallowed and reported as "invalid token".
+  const secret = resolveJwtSecret();
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
     return {
       userId: payload.userId as number,
       userName: payload.userName as string,
