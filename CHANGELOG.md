@@ -2,6 +2,30 @@
 
 本文件记录 ruoyi-next 的版本变化。版本号遵循 SemVer。
 
+## [0.1.2] - 2026-11-09
+
+修复一个会导致 **HTTP 部署无法登录** 的会话 Cookie 问题。无破坏性 API 变更，可直接从 0.1.1 升级。
+
+### 修复
+
+- 🔴 **Secure Cookie 被浏览器丢弃**：`getCookieOptions()` 原先把 `secure` 绑定为
+  `NODE_ENV === "production"`，导致以 `npm run build && npm start`（或任何 HTTP 直连）
+  部署时，登录接口虽然返回成功并签发了会话，浏览器却会按规范丢弃带 `Secure` 标志的
+  Cookie，用户被立刻重定向回登录页，表现为「账号密码正确却登不进去」。
+  现改为**默认不设置 Secure**，仅在显式设置 `COOKIE_SECURE=true` 时开启（HTTPS 部署）。
+- `.env.example` 增加 `COOKIE_SECURE` 可选注释，说明何时才应开启。
+
+### 新增
+
+- `src/__tests__/cookie-options.test.ts`：5 个用例锁住 Cookie 契约（含「生产模式下也不得
+  默认 secure」的回归断言），全仓测试由 19 增至 24。
+
+### 升级注意
+
+- 通过 **HTTPS** 提供服务的部署，请在 `.env` 中显式设置 `COOKIE_SECURE="true"`；
+  HTTP / 局域网 IP 直连保持默认即可。
+- 升级后重新构建并重启服务即可，无需数据迁移或依赖更新。
+
 ## [0.1.1] - 2026-11-08
 
 首个维护版本，聚焦**安全加固**。无破坏性 API 变更，可直接从 0.1.0 升级。

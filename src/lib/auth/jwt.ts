@@ -44,7 +44,10 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
 export function getCookieOptions() {
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    // Secure cookies are silently dropped by browsers over plain HTTP, which
+    // breaks login on local/LAN deployments. Opt in explicitly with
+    // COOKIE_SECURE=true when serving over HTTPS.
+    secure: process.env.COOKIE_SECURE === "true",
     sameSite: "lax" as const,
     path: "/",
     maxAge: 24 * 60 * 60,

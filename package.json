@@ -1,6 +1,6 @@
 {
   "name": "ruoyi-next",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "description": "RuoYi admin backend rebuilt with Next.js 15, Prisma 6 and a schema-driven CRUD engine",
   "license": "MIT",

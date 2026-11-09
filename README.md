@@ -48,6 +48,8 @@ src/app-config.ts  运行时配置注入点（业务路径、品牌、token 头�
 
 - `.env` 已 gitignore；`.env.example` 只含占位符。
 - 生产环境**必须**设置 `JWT_SECRET`（≥32 字符）；v0.1.1 起缺失或过弱会 **fail-fast 报错**，不再回落到公开弱密钥。
+- 会话 Cookie 默认适配 HTTP 直连部署；**仅当通过 HTTPS 服务时**设置 `COOKIE_SECURE=true`
+  （否则浏览器会丢弃 Secure Cookie，出现「登录成功却被踢回登录页」）。
 - 依赖安全：`npm run audit:prod` 检查生产依赖漏洞，CI 每次运行都会执行。
 - 机器 token 通道默认关闭；启用方式见 [docs/machine-token.md](docs/machine-token.md)。
 - 报告漏洞请走 [SECURITY.md](SECURITY.md)，不要开公开 issue。
